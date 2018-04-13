@@ -96,6 +96,12 @@ export default {
       }).catch(() => {
         // 点击取消的处理
       })
+    },
+    handleOpen (key, keyPath) {
+      console.log(key, keyPath)
+    },
+    handleClose (key, keyPath) {
+      console.log(key, keyPath)
     }
   }
 }

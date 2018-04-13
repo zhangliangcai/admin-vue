@@ -22,7 +22,7 @@ const router = new Router({
       name: 'home',
       path: '/',
       component: Home,
-      // 我们可以通过配置自路由的方式让某个组件渲染到父路由组件
+      // 我们可以通过配置子路由的方式让某个组件渲染到父路由组件
       // 1. 在父路由组件中添加 <router-view></router-view> 出口标记
       // 2. 在父路由中通过 children 来声明自路由
       //    children 是一个数组
