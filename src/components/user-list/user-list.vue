@@ -34,17 +34,37 @@
     </el-table-column>
     <el-table-column
       prop="mobile"
-      label="电话">
+      label="电话"
+      width="180">
+    </el-table-column>
+     <el-table-column
+      label="用户状态"
+      width="100">
+      <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="操作"
+      width="200">
+      <template slot-scope="scope">
+          <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
+      </template>
     </el-table-column>
   </el-table>
   <el-pagination
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
-    :current-page="4"
-    :page-sizes="[100, 200, 300, 400]"
-    :page-size="100"
+    :current-page.sync="currentPage"
+    :page-sizes="[1, 2, 3, 4]"
     layout="total, sizes, prev, pager, next, jumper"
-    :total="400">
+    :total="totalSize">
   </el-pagination>
 </div>
 </template>
@@ -52,26 +72,38 @@
 <script>
 export default {
   async created () {
-    const res = await this.$http.get('/users', {
-      params: { // 请求参数，对象会被转换为 k=v&k=v 的格式，然后拼接到请求路径 ? 后面发起请求
-        pagenum: 1,
-        pagesize: 5
-      }
-    })
-    this.tableData = res.data.data.users
+    // 用户列表组件一上来就加载第一页的数据
+    this.loadUsersByPage(1)
   },
   data () {
     return {
       searchText: '',
-      tableData: []
+      tableData: [],
+      totalSize: 0,
+      currentPage: 1,
+      pageSize: 1
     }
   },
   methods: {
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    handleSizeChange (pageSize) {
+      this.pageSize = pageSize
+      this.loadUsersByPage(1, pageSize)
+      this.currentPage = 1
     },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+    handleCurrentChange (currentPage) {
+      this.currentPage = currentPage
+      this.loadUsersByPage(currentPage, this.pageSize)
+    },
+    async loadUsersByPage (page, pageSize = 1) {
+      const res = await this.$http.get('/users', {
+        params: { // 请求参数，对象会被转换为 k=v&k=v 的格式，然后拼接到请求路径 ? 后面发起请求
+          pagenum: page,
+          pagesize: pageSize
+        }
+      })
+      const {users, total} = res.data.data
+      this.tableData = users
+      this.totalSize = total
     }
   }
 }
